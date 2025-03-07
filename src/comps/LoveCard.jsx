@@ -1,39 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart } from "lucide-react";
-
-const FloatingHearts = () => {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {[...Array(8)].map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ 
-            opacity: 0,
-            scale: 0,
-            x: Math.random() * 100 - 50,
-            y: Math.random() * 100 + 50
-          }}
-          animate={{
-            opacity: [0, 1, 0],
-            scale: [0, 1, 0],
-            x: Math.random() * 200 - 100,
-            y: [-50, -150 - Math.random() * 100]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            delay: i * 0.5,
-            ease: "easeOut"
-          }}
-          className="absolute text-pink-200"
-        >
-          <Heart size={16} fill="currentColor" />
-        </motion.div>
-      ))}
-    </div>
-  );
-};
+import { Heart, Gift } from "lucide-react";
 
 const TypewriterText = ({ text }) => {
   const [displayText, setDisplayText] = useState("");
@@ -116,18 +83,13 @@ export default function LoveCard() {
     }
   ];
 
-  const startAudio = () => {
+  const handleStart = () => {
+    setShowOverlay(false);
     if (audioRef.current) {
-      audioRef.current.volume = 1;
       audioRef.current.play().catch(error => {
         console.log("Lỗi phát nhạc:", error);
       });
     }
-  };
-
-  const handleStart = () => {
-    setShowOverlay(false);
-    startAudio();
   };
 
   const handleNext = () => {
@@ -141,12 +103,7 @@ export default function LoveCard() {
   if (showOverlay) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-pink-100">
-        <audio 
-          ref={audioRef} 
-          src="audio.mp3" 
-          loop 
-          preload="auto"
-        />
+        <audio ref={audioRef} src="audio.mp3" loop />
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -167,26 +124,14 @@ export default function LoveCard() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-pink-100">
-      <audio 
-        ref={audioRef} 
-        src="audio.mp3" 
-        loop 
-        preload="auto"
-      />
+      <audio ref={audioRef} src="audio.mp3" loop />
 
-      <motion.div 
-        className="flex flex-col items-center justify-between relative w-[95%] h-[80vh] md:w-[60%] bg-gradient-to-br from-pink-400 to-red-500 rounded-2xl p-4 shadow-lg"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <FloatingHearts />
-        
+      <div className="flex flex-col items-center justify-between relative w-[95%] h-[80vh] md:w-[60%] bg-gradient-to-br from-pink-400 to-red-500 rounded-2xl p-4">
         <div className="text-center w-full font-semibold font-outfit pt-4 mb-8">
           <motion.h1 
-            className="font-playwrite text-xl text-white drop-shadow-lg"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="font-playwrite text-xl"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
             <TypewriterText text="Happy 8/3 my darling!" />
@@ -205,21 +150,17 @@ export default function LoveCard() {
             >
               <div className="flex items-center justify-center gap-4 w-full">
                 <div className="flex-1">
-                  <motion.img 
+                  <img 
                     src={content[step].image} 
                     alt="" 
-                    className="w-full h-40 object-cover max-w-[140px] mx-auto rounded-xl shadow-md hover:scale-105 transition-transform" 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="w-full h-40 object-cover max-w-[140px] mx-auto rounded-xl" 
                   />
                 </div>
                 <div className="flex-1">
-                  <motion.img 
+                  <img 
                     src={content[step].photo} 
                     alt="" 
-                    className="w-full h-40 object-cover max-w-[140px] rounded-xl mx-auto shadow-md hover:scale-105 transition-transform" 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="w-full h-40 object-cover max-w-[140px] rounded-xl mx-auto" 
                   />
                 </div>
               </div>
@@ -227,7 +168,7 @@ export default function LoveCard() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="font-playwrite text-base text-center px-2 whitespace-pre-line text-white drop-shadow"
+                className="font-playwrite text-base text-center px-2 whitespace-pre-line"
               >
                 <TypewriterText text={content[step].text} />
               </motion.p>
@@ -235,18 +176,15 @@ export default function LoveCard() {
           </AnimatePresence>
         </div>
 
-        <motion.div 
-          className="w-full flex justify-center pt-6 pb-4"
-          whileHover={{ scale: 1.02 }}
-        >
+        <div className="w-full flex justify-center pt-6 pb-4">
           <button 
             onClick={handleNext}
-            className="border-2 border-white w-2/3 rounded-lg font-outfit px-3 py-1.5 bg-white/20 backdrop-blur-sm hover:bg-pink-200 transition-all duration-300 text-sm text-white shadow-lg hover:shadow-xl"
+            className="border-2 w-2/3 rounded-lg font-outfit px-3 py-1.5 hover:bg-pink-200 transition-colors text-sm"
           >
             {step === content.length - 1 ? "Xem lại" : "Tiếp theo"}
           </button>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }
