@@ -80,6 +80,7 @@ const TypewriterText = ({ text }) => {
 
 export default function LoveCard() {
   const [step, setStep] = useState(0);
+  const [showOverlay, setShowOverlay] = useState(true);
   const audioRef = useRef(null);
 
   const content = [
@@ -115,24 +116,30 @@ export default function LoveCard() {
     }
   ];
 
-  useEffect(() => {
-    const playAudio = () => {
+  const startAudio = async () => {
+    try {
       if (audioRef.current) {
-        audioRef.current.play().catch((error) => {
-          console.log("Autoplay bị chặn, chờ người dùng tương tác...", error);
-        });
+        audioRef.current.volume = 0;
+        await audioRef.current.play();
+        let vol = 0;
+        const interval = setInterval(() => {
+          if (vol < 1) {
+            vol += 0.1;
+            audioRef.current.volume = vol;
+          } else {
+            clearInterval(interval);
+          }
+        }, 200);
       }
-    };
+    } catch (error) {
+      console.log("Không thể phát nhạc:", error);
+    }
+  };
 
-    playAudio();
-    document.addEventListener("click", playAudio);
-    document.addEventListener("touchstart", playAudio);
-
-    return () => {
-      document.removeEventListener("click", playAudio);
-      document.removeEventListener("touchstart", playAudio);
-    };
-  }, []);
+  const handleStart = () => {
+    setShowOverlay(false);
+    startAudio();
+  };
 
   const handleNext = () => {
     if (step < content.length - 1) {
@@ -142,9 +149,34 @@ export default function LoveCard() {
     }
   };
 
+  if (showOverlay) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-pink-100">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white p-6 rounded-xl shadow-lg text-center"
+        >
+          <h2 className="text-xl font-playwrite mb-4">Thiệp chúc mừng 8/3</h2>
+          <p className="text-sm mb-6 font-outfit">Chạm vào nút bên dưới để mở thiệp 💌</p>
+          <button
+            onClick={handleStart}
+            className="px-6 py-2 bg-pink-400 text-white rounded-lg font-outfit hover:bg-pink-500 transition-colors"
+          >
+            Mở thiệp
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-pink-100">
-      <audio ref={audioRef} src="audio.mp3" loop />
+      <audio 
+        ref={audioRef} 
+        src="audio.mp3" 
+        loop 
+      />
 
       <motion.div 
         className="flex flex-col items-center justify-between relative w-[95%] h-[80vh] md:w-[60%] bg-gradient-to-br from-pink-400 to-red-500 rounded-2xl p-4 shadow-lg"
