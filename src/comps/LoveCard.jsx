@@ -116,23 +116,12 @@ export default function LoveCard() {
     }
   ];
 
-  const startAudio = async () => {
-    try {
-      if (audioRef.current) {
-        audioRef.current.volume = 0;
-        await audioRef.current.play();
-        let vol = 0;
-        const interval = setInterval(() => {
-          if (vol < 1) {
-            vol += 0.1;
-            audioRef.current.volume = vol;
-          } else {
-            clearInterval(interval);
-          }
-        }, 200);
-      }
-    } catch (error) {
-      console.log("Không thể phát nhạc:", error);
+  const startAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.volume = 1;
+      audioRef.current.play().catch(error => {
+        console.log("Lỗi phát nhạc:", error);
+      });
     }
   };
 
@@ -152,6 +141,12 @@ export default function LoveCard() {
   if (showOverlay) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-pink-100">
+        <audio 
+          ref={audioRef} 
+          src="audio.mp3" 
+          loop 
+          preload="auto"
+        />
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -176,6 +171,7 @@ export default function LoveCard() {
         ref={audioRef} 
         src="audio.mp3" 
         loop 
+        preload="auto"
       />
 
       <motion.div 
