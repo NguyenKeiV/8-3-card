@@ -7,17 +7,31 @@ export default function LoveCard() {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    // Phát nhạc tự động khi trang mở
-    if (audioRef.current) {
-      audioRef.current.play().catch(error => {
-        console.log("Autoplay bị chặn: ", error);
-      });
-    }
+    const playAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.play().catch((error) => {
+          console.log("Autoplay bị chặn, chờ người dùng tương tác...", error);
+        });
+      }
+    };
+  
+    // Gọi ngay khi component mount
+    playAudio();
+  
+    // Nếu autoplay bị chặn, chờ người dùng tương tác
+    document.addEventListener("click", playAudio);
+    document.addEventListener("touchstart", playAudio);
+  
+    return () => {
+      document.removeEventListener("click", playAudio);
+      document.removeEventListener("touchstart", playAudio);
+    };
   }, []);
+  
 
   return (
     <div className="flex items-center justify-center h-screen bg-pink-100">
-         <audio ref={audioRef} src="/audio.mp3" loop />
+         <audio ref={audioRef} src="audio.mp3" loop />
       <div className="relative w-[50%] h-auto bg-white shadow-xl rounded-2xl overflow-hidden">
         <motion.div
           className="absolute inset-0 bg-gradient-to-br from-pink-400 to-red-500"
