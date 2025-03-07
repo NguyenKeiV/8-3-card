@@ -2,6 +2,49 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Gift } from "lucide-react";
 
+const TypewriterText = ({ text }) => {
+  const [displayText, setDisplayText] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
+  
+  useEffect(() => {
+    setDisplayText("");
+    setIsTyping(true);
+    let currentText = "";
+    let currentIndex = 0;
+
+    const addNextChar = () => {
+      if (currentIndex < text?.length) {
+        const char = text[currentIndex];
+        currentText += char;
+        setDisplayText(currentText);
+        currentIndex++;
+
+        // Xác định độ trễ cho ký tự tiếp theo
+        let delay = 100; // Độ trễ mặc định
+        if (char === '.' || char === '!' || char === '?') {
+          delay = 800; // Dừng lâu hơn ở cuối câu
+        } else if (char === ',' || char === ';') {
+          delay = 400; // Dừng ở dấu phẩy
+        } else if (char === '\n') {
+          delay = 600; // Dừng khi xuống dòng
+        }
+
+        setTimeout(addNextChar, delay);
+      } else {
+        setIsTyping(false);
+      }
+    };
+
+    addNextChar();
+
+    return () => {
+      setIsTyping(false);
+    };
+  }, [text]);
+
+  return <span>{displayText}</span>;
+};
+
 export default function LoveCard() {
   const [step, setStep] = useState(0);
   const audioRef = useRef(null);
@@ -18,12 +61,12 @@ export default function LoveCard() {
       photo: "anh7.jpg"
     },
     {
-      text: "Chúc em luôn vui vẻ\nVà gặp nhiều may mắn trong cuộc sống\nMọi điều tốt đẹp sẽ đến với em! ✨\nChúc em mỗi ngày thức dậy\nĐều tràn đầy năng lượng\nVà háo hức với những điều mới! 🌞",
+      text: "Chúc em luôn vui vẻ, gặp nhiều may mắn trong cuộc sống\nMọi điều tốt đẹp sẽ đến với em! ✨\nChúc em mỗi ngày thức dậy\nĐều tràn đầy năng lượng\nVà háo hức với những điều mới! 🌞",
       image: "Catshy.gif",
       photo: "anh3.jpg"
     },
     {
-      text: "Chúc em luôn tự tin vào những quyết định của mình Và đạt được mọi điều em mong muốn 💫 \n Những mối quan hệ xung quanh em tốt lên, để em của anh không phải suy nghĩ quá nhiều nữa nhé!",
+      text: "Chúc em luôn tự tin vào những quyết định của mình, đạt được mọi điều em mong muốn 💫 \n Những mối quan hệ xung quanh em tốt lên, để em của anh không phải suy nghĩ quá nhiều nữa nhé!",
       image: "Cute4.gif",
       photo: "anh4.JPG"
     },
@@ -33,7 +76,7 @@ export default function LoveCard() {
       photo: "anh4.JPG"
     },
     {
-      text: "Chúc em ngày  thật nhiều niềm vui và hạnh phúc. Thương em thật nhiều! ❤️",
+      text: "Chúc em ngày 8/3 thật nhiều niềm vui và hạnh phúc. Thương em thật nhiều! ❤️",
       image: "Cute6.gif",
       photo: "anh5.JPG"
     }
@@ -78,7 +121,7 @@ export default function LoveCard() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            Happy 8/3 my darling!
+            <TypewriterText text="Happy 8/3 my darling!" />
           </motion.h1>
         </div>
 
@@ -114,7 +157,7 @@ export default function LoveCard() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="font-playwrite text-base text-center px-2 whitespace-pre-line"
               >
-                {content[step].text}
+                <TypewriterText text={content[step].text} />
               </motion.p>
             </motion.div>
           </AnimatePresence>
